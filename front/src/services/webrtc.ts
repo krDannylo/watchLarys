@@ -201,7 +201,7 @@ export class WebRTCService {
        * adiciona a tela em cada PeerConnection.
        */
       for (const [userId, peer] of this.peerConnections) {
-        // console.log(`[SCREEN] Adicionando tela para ${userId}`);
+        console.log(`[SCREEN] Adicionando tela para ${userId}`);
 
         stream.getTracks().forEach((track) => {
           peer.addTrack(track, stream);
@@ -282,7 +282,7 @@ export class WebRTCService {
     this.stopScreenShare();
 
     for (const [userId, peer] of this.peerConnections) {
-      // console.log(`Fechando conexão com ${userId}`);
+      console.log(`Fechando conexão com ${userId}`);
 
       peer.close();
     }
