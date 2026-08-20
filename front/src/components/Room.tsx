@@ -1,17 +1,20 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useWebRTC } from "../hooks/useWebRTC";
 import { ScreenViewer } from "./ScreenViewer";
 import { RoomControls } from "./RoomControls";
 import { ParticipantList } from "./ParticipantList";
 import { socket } from "../services/socket";
+import { ServerStatus } from "./ServerStatus";
 
 export function Room() {
   const [roomId, setRoomId] = useState("");
   const [joinedRoomId, setJoinedRoomId] = useState("");
   const [name, setName] = useState("");
+  const [showServerError, setShowServerError] = useState(false);
 
   const {
     connected,
+    connectionStatus,
     remoteStreams,
     localStream,
     screenShareDenied,
@@ -19,6 +22,14 @@ export function Room() {
     requestScreenShare,
     stopScreenShare,
   } = useWebRTC(joinedRoomId);
+
+  useEffect(() => {
+    if (!connected) {
+      setShowServerError(true);
+    } else {
+      setShowServerError(false);
+    }
+  }, [connected]);
 
   function joinRoom() {
     const room = roomId.trim();
@@ -134,7 +145,7 @@ export function Room() {
 
               <button
                 onClick={joinRoom}
-                disabled={!name.trim() || !roomId.trim()}
+                disabled={!connected}
                 className="w-full rounded-xl bg-white px-4 py-3 text-sm font-semibold text-zinc-900 transition hover:bg-zinc-200 disabled:cursor-not-allowed disabled:opacity-40"
               >
                 Entrar na sala
@@ -144,6 +155,9 @@ export function Room() {
 
           <p className="mt-5 text-center text-xs text-zinc-600">
             Nenhuma conta é necessária.
+          </p>
+          <p className="mt-5 flex justify-center">
+            <ServerStatus status={connectionStatus} />
           </p>
         </div>
       </main>
@@ -159,7 +173,7 @@ export function Room() {
           </div>
 
           <div>
-            <h1 className="text-sm font-semibold">ScreenShare</h1>
+            <h1 className="text-sm font-semibold">WatchLarys</h1>
 
             <div className="flex items-center gap-2">
               <span

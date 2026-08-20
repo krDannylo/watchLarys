@@ -31,6 +31,10 @@ export function useWebRTC(roomId: string) {
     new Map(),
   );
 
+  const [connectionStatus, setConnectionStatus] = useState<
+    "connecting" | "connected" | "disconnected"
+  >("connecting");
+
   const webRTC = useRef<WebRTCService | null>(null);
 
   useEffect(() => {
@@ -73,12 +77,14 @@ export function useWebRTC(roomId: string) {
       console.log("Conectado ao servidor:", socket.id);
 
       setConnected(true);
+      setConnectionStatus("connected");
     }
 
     function handleDisconnect() {
       console.log("Desconectado do servidor.");
 
       setConnected(false);
+      setConnectionStatus("disconnected");
     }
 
     /**
@@ -262,6 +268,10 @@ export function useWebRTC(roomId: string) {
 
     socket.on("ice-candidate", handleIceCandidate);
 
+    if (socket.connected) {
+      handleConnect();
+    }
+
     return () => {
       socket.off("connect", handleConnect);
 
@@ -323,6 +333,7 @@ export function useWebRTC(roomId: string) {
 
   return {
     connected,
+    connectionStatus,
     remoteStreams,
     localStream,
     screenShareDenied,

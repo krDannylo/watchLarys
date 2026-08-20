@@ -173,50 +173,73 @@ export class WebRTCService {
   }
 
   async startScreenShare() {
-    if (this.peerConnections.size === 0) {
-      throw new Error("Nenhuma conexão WebRTC foi estabelecida.");
-    }
-
     if (this.localStream) {
       console.warn("Já existe uma tela sendo compartilhada.");
-
       return;
     }
 
-    const stream = await navigator.mediaDevices.getDisplayMedia({
-      video: true,
-      audio: true,
-    });
-
-    this.localStream = stream;
-
-    /**
-     * Adiciona a tela para todos os usuários
-     * conectados.
-     */
-    for (const [userId, peer] of this.peerConnections) {
-      console.log(`[SCREEN] Adicionando tela para ${userId}`);
-
-      stream.getTracks().forEach((track) => {
-        peer.addTrack(track, stream);
+    try {
+      const stream = await navigator.mediaDevices.getDisplayMedia({
+        video: {
+          displaySurface: "window",
+        },
+        audio: true,
       });
+
+      this.localStream = stream;
+
+      /**
+       * Mostra a tela localmente.
+       *
+       * Isso funciona mesmo se não houver
+       * nenhuma outra pessoa na sala.
+       */
+      this.onLocalStream?.(stream);
+
+      /**
+       * Se existem outros participantes,
+       * adiciona a tela em cada PeerConnection.
+       */
+      for (const [userId, peer] of this.peerConnections) {
+        console.log(`[SCREEN] Adicionando tela para ${userId}`);
+
+        stream.getTracks().forEach((track) => {
+          peer.addTrack(track, stream);
+        });
+      }
+
+      /**
+       * Detecta quando o usuário encerra o compartilhamento
+       * pelo próprio navegador.
+       */
+      const videoTrack = stream.getVideoTracks()[0];
+
+      if (videoTrack) {
+        videoTrack.onended = () => {
+          console.log("Compartilhamento encerrado pelo usuário.");
+
+          this.stopScreenShare();
+
+          this.onScreenShareStopped?.();
+        };
+      }
+
+      console.log(
+        `[SCREEN] Compartilhamento de tela iniciado. Participantes: ${this.peerConnections.size}`,
+      );
+    } catch (error) {
+      /**
+       * O usuário pode simplesmente ter fechado/cancelado
+       * o seletor de compartilhamento.
+       */
+      if (error instanceof DOMException && error.name === "NotAllowedError") {
+        console.log("Compartilhamento de tela cancelado pelo usuário.");
+
+        return;
+      }
+
+      console.error("Erro ao iniciar compartilhamento:", error);
     }
-
-    this.onLocalStream?.(stream);
-
-    const videoTrack = stream.getVideoTracks()[0];
-
-    if (videoTrack) {
-      videoTrack.onended = () => {
-        console.log("Compartilhamento encerrado pelo usuário.");
-
-        this.stopScreenShare();
-
-        this.onScreenShareStopped?.();
-      };
-    }
-
-    console.log("Compartilhamento de tela iniciado.");
   }
 
   stopScreenShare() {
