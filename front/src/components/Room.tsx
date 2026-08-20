@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useWebRTC } from "../hooks/useWebRTC";
 import { ScreenViewer } from "./ScreenViewer";
 import { RoomControls } from "./RoomControls";
@@ -10,7 +10,6 @@ export function Room() {
   const [roomId, setRoomId] = useState("");
   const [joinedRoomId, setJoinedRoomId] = useState("");
   const [name, setName] = useState("");
-  const [showServerError, setShowServerError] = useState(false);
 
   const {
     connected,
@@ -22,14 +21,6 @@ export function Room() {
     requestScreenShare,
     stopScreenShare,
   } = useWebRTC(joinedRoomId);
-
-  useEffect(() => {
-    if (!connected) {
-      setShowServerError(true);
-    } else {
-      setShowServerError(false);
-    }
-  }, [connected]);
 
   function joinRoom() {
     const room = roomId.trim();
