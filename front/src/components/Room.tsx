@@ -30,14 +30,14 @@ export function Room() {
       return;
     }
 
-    console.log(
-      "[ROOM] Emitindo join-room:",
-      room,
-      "socket:",
-      socket.id,
-      "name:",
-      userName,
-    );
+    // console.log(
+    //   "[ROOM] Emitindo join-room:",
+    //   room,
+    //   "socket:",
+    //   socket.id,
+    //   "name:",
+    //   userName,
+    // );
 
     socket.emit("join-room", {
       roomId: room,
@@ -53,7 +53,7 @@ export function Room() {
       return;
     }
 
-    console.log("[ROOM] Solicitando compartilhamento...");
+    // console.log("[ROOM] Solicitando compartilhamento...");
 
     requestScreenShare();
   }
@@ -63,7 +63,7 @@ export function Room() {
       return;
     }
 
-    console.log("[ROOM] Parando compartilhamento...");
+    // console.log("[ROOM] Parando compartilhamento...");
 
     stopScreenShare();
   }

@@ -67,21 +67,21 @@ export function useWebRTC(roomId: string) {
           return;
         }
 
-        console.log("Compartilhamento encerrado externamente.");
+        // console.log("Compartilhamento encerrado externamente.");
 
         socket.emit("stop-screen-share", roomId);
       },
     );
 
     function handleConnect() {
-      console.log("Conectado ao servidor:", socket.id);
+      // console.log("Conectado ao servidor:", socket.id);
 
       setConnected(true);
       setConnectionStatus("connected");
     }
 
     function handleDisconnect() {
-      console.log("Desconectado do servidor.");
+      // console.log("Desconectado do servidor.");
 
       setConnected(false);
       setConnectionStatus("disconnected");
@@ -111,9 +111,9 @@ export function useWebRTC(roomId: string) {
       userId: string;
       name: string;
     }) {
-      console.log(
-        `[USER-JOINED] ${socket.id} recebeu entrada de ${name} (${userId})`,
-      );
+      // console.log(
+      //   `[USER-JOINED] ${socket.id} recebeu entrada de ${name} (${userId})`,
+      // );
 
       setParticipants((current) => {
         const updated = new Map(current);
@@ -133,7 +133,7 @@ export function useWebRTC(roomId: string) {
      * Usuário saiu.
      */
     function handleUserLeft(userId: string) {
-      console.log(`[USER-LEFT] ${socket.id} perdeu conexão com ${userId}`);
+      // console.log(`[USER-LEFT] ${socket.id} perdeu conexão com ${userId}`);
 
       setParticipants((current) => {
         const updated = new Map(current);
@@ -164,7 +164,7 @@ export function useWebRTC(roomId: string) {
      * Compartilhamento negado.
      */
     function handleScreenShareDenied({ reason }: { reason: string }) {
-      console.log("Compartilhamento negado:", reason);
+      // console.log("Compartilhamento negado:", reason);
 
       setScreenShareDenied(reason);
     }
@@ -173,7 +173,7 @@ export function useWebRTC(roomId: string) {
      * Compartilhamento autorizado.
      */
     async function handleScreenShareApproved() {
-      console.log("Compartilhamento de tela autorizado!");
+      // console.log("Compartilhamento de tela autorizado!");
 
       setScreenShareDenied(null);
 
@@ -188,9 +188,9 @@ export function useWebRTC(roomId: string) {
      * Outro usuário encerrou o compartilhamento.
      */
     function handleScreenShareStopped({ userId }: { userId: string }) {
-      console.log(
-        `[SCREEN-STOPPED] Compartilhamento de ${userId} foi encerrado`,
-      );
+      // console.log(
+      //   `[SCREEN-STOPPED] Compartilhamento de ${userId} foi encerrado`,
+      // );
 
       /**
        * Se fui eu quem estava compartilhando,
@@ -220,7 +220,7 @@ export function useWebRTC(roomId: string) {
      * Offer WebRTC.
      */
     async function handleOffer(message: OfferMessage) {
-      console.log("Offer recebida de:", message.sender);
+      // console.log("Offer recebida de:", message.sender);
 
       await webRTC.current?.handleOffer(message.sender, message.offer);
     }
@@ -229,7 +229,7 @@ export function useWebRTC(roomId: string) {
      * Answer WebRTC.
      */
     async function handleAnswer(message: AnswerMessage) {
-      console.log("Answer recebida de:", message.sender);
+      // console.log("Answer recebida de:", message.sender);
 
       await webRTC.current?.handleAnswer(message.sender, message.answer);
     }
@@ -238,7 +238,7 @@ export function useWebRTC(roomId: string) {
      * ICE Candidate WebRTC.
      */
     async function handleIceCandidate(message: IceCandidateMessage) {
-      console.log("ICE candidate recebido de:", message.sender);
+      // console.log("ICE candidate recebido de:", message.sender);
 
       await webRTC.current?.handleIceCandidate(
         message.sender,
@@ -306,12 +306,12 @@ export function useWebRTC(roomId: string) {
    */
   function requestScreenShare() {
     if (!roomId) {
-      console.warn("É necessário entrar em uma sala.");
+      // console.warn("É necessário entrar em uma sala.");
 
       return;
     }
 
-    console.log("Solicitando compartilhamento...");
+    // console.log("Solicitando compartilhamento...");
 
     setScreenShareDenied(null);
 

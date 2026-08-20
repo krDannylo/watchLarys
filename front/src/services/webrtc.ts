@@ -30,7 +30,7 @@ export class WebRTCService {
       return existingPeer;
     }
 
-    console.log(`Criando PeerConnection para ${target}`);
+    // console.log(`Criando PeerConnection para ${target}`);
 
     const peer = new RTCPeerConnection({
       iceServers: [
@@ -52,7 +52,7 @@ export class WebRTCService {
     };
 
     peer.onconnectionstatechange = () => {
-      console.log(`Estado WebRTC [${target}]:`, peer.connectionState);
+      // console.log(`Estado WebRTC [${target}]:`, peer.connectionState);
 
       if (
         peer.connectionState === "failed" ||
@@ -63,7 +63,7 @@ export class WebRTCService {
     };
 
     peer.ontrack = (event) => {
-      console.log(`Stream remoto recebido de ${target}!`);
+      // console.log(`Stream remoto recebido de ${target}!`);
 
       const [stream] = event.streams;
 
@@ -83,7 +83,7 @@ export class WebRTCService {
      */
     peer.onnegotiationneeded = async () => {
       try {
-        console.log(`[NEGOTIATION] Necessária com ${target}`);
+        // console.log(`[NEGOTIATION] Necessária com ${target}`);
 
         const offer = await peer.createOffer();
 
@@ -94,9 +94,9 @@ export class WebRTCService {
           offer,
         });
 
-        console.log(`[NEGOTIATION] Offer enviada para ${target}`);
+        // console.log(`[NEGOTIATION] Offer enviada para ${target}`);
       } catch (error) {
-        console.error(`[NEGOTIATION] Erro com ${target}:`, error);
+        // console.error(`[NEGOTIATION] Erro com ${target}:`, error);
       }
     };
 
@@ -201,7 +201,7 @@ export class WebRTCService {
        * adiciona a tela em cada PeerConnection.
        */
       for (const [userId, peer] of this.peerConnections) {
-        console.log(`[SCREEN] Adicionando tela para ${userId}`);
+        // console.log(`[SCREEN] Adicionando tela para ${userId}`);
 
         stream.getTracks().forEach((track) => {
           peer.addTrack(track, stream);
@@ -216,7 +216,7 @@ export class WebRTCService {
 
       if (videoTrack) {
         videoTrack.onended = () => {
-          console.log("Compartilhamento encerrado pelo usuário.");
+          // console.log("Compartilhamento encerrado pelo usuário.");
 
           this.stopScreenShare();
 
@@ -224,21 +224,21 @@ export class WebRTCService {
         };
       }
 
-      console.log(
-        `[SCREEN] Compartilhamento de tela iniciado. Participantes: ${this.peerConnections.size}`,
-      );
+      // console.log(
+      //   `[SCREEN] Compartilhamento de tela iniciado. Participantes: ${this.peerConnections.size}`,
+      // );
     } catch (error) {
       /**
        * O usuário pode simplesmente ter fechado/cancelado
        * o seletor de compartilhamento.
        */
       if (error instanceof DOMException && error.name === "NotAllowedError") {
-        console.log("Compartilhamento de tela cancelado pelo usuário.");
+        // console.log("Compartilhamento de tela cancelado pelo usuário.");
 
         return;
       }
 
-      console.error("Erro ao iniciar compartilhamento:", error);
+      // console.error("Erro ao iniciar compartilhamento:", error);
     }
   }
 
@@ -255,7 +255,7 @@ export class WebRTCService {
 
     this.onLocalStream?.(null);
 
-    console.log("Compartilhamento de tela encerrado.");
+    // console.log("Compartilhamento de tela encerrado.");
   }
 
   removePeerConnection(userId: string) {
@@ -265,7 +265,7 @@ export class WebRTCService {
       return;
     }
 
-    console.log(`Removendo conexão com ${userId}`);
+    // console.log(`Removendo conexão com ${userId}`);
 
     peer.close();
 
@@ -273,7 +273,7 @@ export class WebRTCService {
   }
 
   removeRemoteUser(userId: string) {
-    console.log(`Usuário remoto removido: ${userId}`);
+    // console.log(`Usuário remoto removido: ${userId}`);
 
     this.removePeerConnection(userId);
   }
@@ -282,7 +282,7 @@ export class WebRTCService {
     this.stopScreenShare();
 
     for (const [userId, peer] of this.peerConnections) {
-      console.log(`Fechando conexão com ${userId}`);
+      // console.log(`Fechando conexão com ${userId}`);
 
       peer.close();
     }
